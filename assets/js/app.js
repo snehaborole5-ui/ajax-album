@@ -29,7 +29,7 @@ function fetchalbums(){
   xhr.onload = function() {
     if(xhr.status >= 200 && xhr.status <= 299){
       let allData = JSON.parse(xhr.response)
-      // पहिल्या १०० अल्बम्सचा डेटा फिल्टर करून रिव्हर्स दाखवणे
+      
       AlbumArr = allData.slice(0, 100)
       createCards(AlbumArr.reverse())
     }
@@ -83,7 +83,7 @@ function onsubmit(ele){
       let res = JSON.parse(xhr.response)
       createNewcard(newobj, res)
     } else {
-      snackbar('काहीतरी चूक झाली!', 'error')
+      snackbar('Failed to Fetch Data!', 'error')
     }
   }
 }
@@ -155,7 +155,7 @@ function onupdate(){
   let PUT_Url = `${Base_Url}/albums/${updateId}`
   let xhr = new XMLHttpRequest()
   xhr.open('PUT', PUT_Url)
-  // तुमच्या ओरिजनल कोडप्रमाणे स्ट्रिंगीफाय करून ऑब्जेक्ट पाठवणे
+
   xhr.send(JSON.stringify(updateObj))
 
   xhr.onload = function(){
@@ -174,7 +174,7 @@ function onupdate(){
       
       snackbar(`The Album id ${updateId} Is Updated Successfully!!`, 'success')
     } else {
-      snackbar('अपडेट अयशस्वी!', 'error')
+      snackbar('Update Failed!', 'error')
     }
     spinner.classList.add('d-none')
   }
@@ -204,7 +204,7 @@ function OnRemove(ele){
           ele.closest('.col-md-4').remove()
           snackbar(`The Album id ${removeId} Is Removed Successfully!!`, 'success')
         } else {
-          snackbar('डिलीट करताना एरर आली!', 'error')
+          snackbar('Deletion Failed!', 'error')
         }
         spinner.classList.add('d-none')
       }
