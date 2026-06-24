@@ -1,57 +1,60 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<title>Albums Task</title>
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-		<link rel="stylesheet" href="./assets/css/style.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-	</head>
-	<body>
-		<div class="container-fluid mt-5">
-			<div class="row">
-				<div class="col-md-6 offset-md-3">
-					<div class="card">
-						<div class="card-body">
-							<form action="" id="inputform">
-								<div class="form-group">
-									<label for="albumTitle" class="font-weight-bold">Album Title*</label>
-									<input type="text" class="form-control" id="albumTitle" required>
-								</div>
-								
-								<div class="form-group">
-									<label for="userId" class="font-weight-bold">UserId*</label>
-									<select class="form-control" id="userId" required>
-										<option value="1">1</option>
-										<option value="2">2</option>
-										<option value="3">3</option>
-										<option value="4">4</option>
-										<option value="5">5</option>
-										<option value="6">6</option>
-										<option value="7">7</option>
-										<option value="8">8</option>
-										<option value="9">9</option>
-										<option value="10">10</option>
-									</select>
-								</div>
-								
-								<button class="btn btn-sm btn-block btn-primary" id="Addalbum">Add Album</button>
-								<button type="button" class="d-none btn btn-sm btn-block btn-success" id="Updatealbum">Update Album</button>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-			
-			<div class="row mt-5" id="cardcontainer"></div>
-		</div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Album Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
 
-		<div class="spinner d-none" id="spinner">
-			<div class="spinner-border text-warning" role="status">
-  				<span class="sr-only">Loading...</span>
-			</div>
-		</div>
+    <div class="spinner-overlay" id="spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
 
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-		<script src="./assets/js/app.js"></script>
-	</body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card p-4 form-card">
+                    <h2 class="text-center mb-4 text-success font-weight-bold">ALBUM CARD</h2>
+                    <form id="albumForm">
+                        <div class="form-group mb-3">
+                            <label for="title" class="font-weight-bold">Title*</label>
+                            <input type="text" id="title" class="form-control" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="userId" class="font-weight-bold">User Id*</label>
+                            <select id="userId" class="form-control" required>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+                        <button type="submit" id="addAlbumBtn" class="btn btn-block btn-outline-primary">Add Album</button>
+                        <button type="button" id="updateAlbumBtn" class="btn btn-block btn-outline-warning d-none">Update Album</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5" id="albumContainer"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="./assets/js/app.js"></script>
+</body>
 </html>

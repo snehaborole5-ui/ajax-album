@@ -1,216 +1,246 @@
 const cl = console.log;
-const inputform = document.getElementById('inputform')
-const Addalbum = document.getElementById('Addalbum')
-const Updatealbum = document.getElementById('Updatealbum')
-const spinner = document.getElementById('spinner')
-const albumTitle = document.getElementById('albumTitle')
-const userId = document.getElementById('userId')
 
-let Base_Url = `https://jsonplaceholder.typicode.com`
-let AlbumArr = []
+const spinner = document.getElementById('spinner');
+const albumContainer = document.getElementById('albumContainer');
+const albumForm = document.getElementById('albumForm');
+const titleControl = document.getElementById('title');
+const userIdControl = document.getElementById('userId');
+const addAlbumBtn = document.getElementById('addAlbumBtn');
+const updateAlbumBtn = document.getElementById('updateAlbumBtn');
 
-function snackbar(msg, icon){
-  Swal.fire({
-    title : msg,
-    icon : icon,
-    timer : 3000,
-    showConfirmButton: false
-  })
+const BASE_URL = `https://jsonplaceholder.typicode.com`;
+const ALBUM_URL = `${BASE_URL}/albums`;
+
+let albumsArr = [];
+let updateId = null;
+
+function snackbar(msg, icon) {
+    Swal.fire({
+        title: msg,
+        icon: icon,
+        timer: 3000
+    });
 }
 
-function fetchalbums(){
-  spinner.classList.remove('d-none')
-  let Post_url = `${Base_Url}/albums`
-
-  let xhr = new XMLHttpRequest()
-  xhr.open('GET', Post_url)
-  xhr.send(null)
-
-  xhr.onload = function() {
-    if(xhr.status >= 200 && xhr.status <= 299){
-      let allData = JSON.parse(xhr.response)
-      
-      AlbumArr = allData.slice(0, 100)
-      createCards(AlbumArr.reverse())
-    }
-  }
+function initTooltips() {
+    $('[data-toggle="tooltip"]').tooltip({
+        boundary: 'window'
+    });
 }
 
-fetchalbums()
+function fetchAlbums() {
+    spinner.style.display = 'flex';
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', ALBUM_URL);
+    xhr.send(null);
 
-function createCards(arr){
-  let result = ``
-
-  arr.forEach(ele => {
-    result += `<div class="col-md-4 my-4" id='${ele.id}'>
-                <div class="card h-100">
-                  <div class="card-header">
-                    <h2 class="h5 text-truncate">${ele.title}</h2>
-                  </div>
-                  <div class="card-body">
-                    <h3>User Id : ${ele.userId}</h3>
-                    <p class="text-muted">Album Id : ${ele.id}</p>
-                  </div>
-                  <div class="card-footer d-flex justify-content-between">
-                    <button class="btn btn-danger btn-sm" onclick="OnEdit(this)">Edit</button>
-                    <button class="btn btn-primary btn-sm" onclick="OnRemove(this)">Delete</button>
-                  </div>
-                </div>
-              </div>`
-  })
-
-  let cardcontainer = document.getElementById('cardcontainer')
-  cardcontainer.innerHTML = result
-  spinner.classList.add('d-none')
-}
-
-function onsubmit(ele){
-  ele.preventDefault()
-  spinner.classList.remove('d-none')
-
-  let newobj = {
-    userId : parseInt(userId.value),
-    title : albumTitle.value
-  }
-
-  let Post_url = `${Base_Url}/albums`
-  let xhr = new XMLHttpRequest()
-  xhr.open('POST', Post_url)
-  xhr.send(JSON.stringify(newobj))
-
-  xhr.onload = function(){
-    if(xhr.status >= 200 && xhr.status <= 299){
-      let res = JSON.parse(xhr.response)
-      createNewcard(newobj, res)
-    } else {
-      snackbar('Failed to Fetch Data!', 'error')
-    }
-  }
-}
-
-function createNewcard(newobj, res){
-  let div = document.createElement('div')
-  div.className = 'col-md-4 my-4'
-  div.id = res.id
-
-  div.innerHTML = `<div class="card h-100">
-                  <div class="card-header">
-                    <h2 class="h5 text-truncate">${newobj.title}</h2>
-                  </div>
-                  <div class="card-body">
-                    <h3>User Id : ${newobj.userId}</h3>
-                    <p class="text-muted">Album Id : ${res.id}</p>
-                  </div>
-                  <div class="card-footer d-flex justify-content-between">
-                    <button class="btn btn-sm btn-danger" onclick="OnEdit(this)">Edit</button>
-                    <button class="btn btn-sm btn-primary" onclick="OnRemove(this)">Delete</button>
-                  </div>
-                </div>`
-
-  let cardcontainer = document.getElementById('cardcontainer')
-  cardcontainer.prepend(div)
-  inputform.reset()
-
-  snackbar(`The New Album id ${res.id} Is Added Successfully!!`, 'success')
-  spinner.classList.add('d-none')
-}
-
-function OnEdit(ele){
-  let EditId = ele.closest('.col-md-4').id
-  spinner.classList.remove('d-none')
-
-  localStorage.setItem('EditId', EditId)
-  let Get_url = `${Base_Url}/albums/${EditId}`
-
-  let xhr = new XMLHttpRequest()
-  xhr.open('GET', Get_url)
-  xhr.send(null)
-
-  xhr.onload = function (){
-    if(xhr.status >= 200 && xhr.status <= 299){
-      let editObj = JSON.parse(xhr.response)
-
-      albumTitle.value = editObj.title
-      userId.value = editObj.userId
-
-      Addalbum.classList.add('d-none')
-      Updatealbum.classList.remove('d-none')
-    } else {
-      snackbar('डेटा आणताना एरर आली!', 'error')
-    }
-    spinner.classList.add('d-none')
-  }
-}
-
-function onupdate(){
-  spinner.classList.remove('d-none')
-  let updateId = localStorage.getItem('EditId')
-
-  let updateObj = {
-    userId : parseInt(userId.value),
-    title : albumTitle.value,
-    id : updateId
-  }
-
-  let PUT_Url = `${Base_Url}/albums/${updateId}`
-  let xhr = new XMLHttpRequest()
-  xhr.open('PUT', PUT_Url)
-
-  xhr.send(JSON.stringify(updateObj))
-
-  xhr.onload = function(){
-    if(xhr.status >= 200 && xhr.status <= 299){
-      let div = document.getElementById(updateId)
-      
-      let h2 = div.querySelector('.card-header h2')
-      h2.innerText = updateObj.title
-
-      let h3 = div.querySelector('.card-body h3')
-      h3.innerText = `User Id : ${updateObj.userId}`
-
-      inputform.reset()
-      Addalbum.classList.remove('d-none')
-      Updatealbum.classList.add('d-none')
-      
-      snackbar(`The Album id ${updateId} Is Updated Successfully!!`, 'success')
-    } else {
-      snackbar('Update Failed!', 'error')
-    }
-    spinner.classList.add('d-none')
-  }
-}
-
-function OnRemove(ele){
-  let removeId = ele.closest('.col-md-4').id
-  Swal.fire({
-    title: `Are you sure you want to delete album ${removeId}?`,
-    text: "You won't be able to revert this!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!"
-  }).then((result) => {
-    if (result.isConfirmed) {
-      spinner.classList.remove('d-none')
-      let delete_url = `${Base_Url}/albums/${removeId}`
-
-      let xhr = new XMLHttpRequest()
-      xhr.open('DELETE', delete_url)
-      xhr.send(null)
-
-      xhr.onload = function() {
-        if(xhr.status >= 200 && xhr.status <= 299){
-          ele.closest('.col-md-4').remove()
-          snackbar(`The Album id ${removeId} Is Removed Successfully!!`, 'success')
+    xhr.onload = function () {
+        spinner.style.display = 'none';
+        if (xhr.status >= 200 && xhr.status <= 299) {
+            let data = JSON.parse(xhr.response);
+            albumsArr = [...data];
+            renderAlbumCards(albumsArr.reverse());
         } else {
-          snackbar('Deletion Failed!', 'error')
+            snackbar('Error while fetching the data', 'error');
         }
-        spinner.classList.add('d-none')
-      }
-    }
-  });
+    };
+    xhr.onerror = function() {
+        spinner.style.display = 'none';
+        snackbar('Network Error!', 'error');
+    };
 }
 
-inputform.addEventListener('submit', onsubmit)
-Updatealbum.addEventListener('click', onupdate)
+function renderAlbumCards(arr) {
+    let result = '';
+    arr.forEach(album => {
+        result += `
+            <div class="col-xl-3 col-md-6 col-12 mb-4" id="album-${album.id}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title text-capitalize font-weight-bold text-truncate" data-toggle="tooltip" title="${album.title}">
+                            ${album.title}
+                        </h5>
+                        <div class="mt-3">
+                            <p class="card-text mb-1 text-muted">Album ID : ${album.id}</p>
+                            <p class="card-text mb-3 text-muted">User ID : ${album.userId}</p>
+                            <div class="d-flex justify-content-between">
+                                <button onclick="onEdit('${album.id}')" class="btn btn-sm btn-outline-info px-3">Edit</button>
+                                <button onclick="onRemove('${album.id}')" class="btn btn-sm btn-outline-danger px-3">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    albumContainer.innerHTML = result;
+    initTooltips();
+}
+
+function onAlbumSubmit(eve) {
+    eve.preventDefault();
+
+    let ALBUM_OBJ = {
+        title: titleControl.value,
+        userId: userIdControl.value
+    };
+
+    spinner.style.display = 'flex';
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', ALBUM_URL);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    xhr.send(JSON.stringify(ALBUM_OBJ));
+
+    xhr.onload = function () {
+        spinner.style.display = 'none';
+        if (xhr.status >= 200 && xhr.status <= 299) {
+            let res = JSON.parse(xhr.response);
+            
+            res.title = res.title || ALBUM_OBJ.title;
+            res.userId = res.userId || ALBUM_OBJ.userId;
+
+            albumForm.reset();
+
+            let div = document.createElement('div');
+            div.className = 'col-xl-3 col-md-6 col-12 mb-4';
+            div.id = `album-${res.id}`;
+
+            div.innerHTML = `
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title text-capitalize font-weight-bold text-truncate" data-toggle="tooltip" title="${res.title}">
+                            ${res.title}
+                        </h5>
+                        <div class="mt-3">
+                            <p class="card-text mb-1 text-muted">Album ID : ${res.id}</p>
+                            <p class="card-text mb-3 text-muted">User ID : ${res.userId}</p>
+                            <div class="d-flex justify-content-between">
+                                <button onclick="onEdit('${res.id}')" class="btn btn-sm btn-outline-info px-3">Edit</button>
+                                <button onclick="onRemove('${res.id}')" class="btn btn-sm btn-outline-danger px-3">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            albumContainer.insertBefore(div, albumContainer.firstChild);
+            initTooltips();
+            snackbar(`New album with id ${res.id} created !!!`, 'success');
+        }
+    };
+}
+
+function onEdit(id) {
+    updateId = id;
+    let EDIT_URL = `${BASE_URL}/albums/${updateId}`;
+
+    spinner.style.display = 'flex';
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', EDIT_URL);
+    xhr.send(null);
+
+    xhr.onload = function () {
+        spinner.style.display = 'none';
+        
+        let cardElement = document.getElementById(`album-${id}`);
+        let localTitle = cardElement ? cardElement.querySelector('.card-title').innerText : '';
+        let localUser = '1';
+        if (cardElement) {
+            let textNodes = cardElement.querySelectorAll('.card-text');
+            textNodes.forEach(node => {
+                if (node.innerText.includes('User ID')) {
+                    localUser = node.innerText.replace('User ID : ', '').trim();
+                }
+            });
+        }
+
+        if (xhr.status >= 200 && xhr.status <= 299) {
+            let res = JSON.parse(xhr.response);
+            titleControl.value = res.title || localTitle;
+            userIdControl.value = res.userId || localUser;
+        } else {
+            titleControl.value = localTitle;
+            userIdControl.value = localUser;
+        }
+
+        addAlbumBtn.classList.add('d-none');
+        updateAlbumBtn.classList.remove('d-none');
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+}
+
+function onUpdateAlbum() {
+    let UPDATE_OBJ = {
+        title: titleControl.value,
+        userId: userIdControl.value
+    };
+
+    spinner.style.display = 'flex';
+    let UPDATE_URL = `${BASE_URL}/albums/${updateId}`;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open('PATCH', UPDATE_URL);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    xhr.send(JSON.stringify(UPDATE_OBJ));
+
+    xhr.onload = function () {
+        spinner.style.display = 'none';
+        
+        let cardElement = document.getElementById(`album-${updateId}`);
+        if(cardElement) {
+            cardElement.querySelector('.card-title').innerHTML = UPDATE_OBJ.title;
+            cardElement.querySelector('.card-title').setAttribute('title', UPDATE_OBJ.title);
+            
+            let textNodes = cardElement.querySelectorAll('.card-text');
+            textNodes.forEach(node => {
+                if (node.innerText.includes('User ID')) {
+                    node.innerHTML = `User ID : ${UPDATE_OBJ.userId}`;
+                }
+            });
+            
+            cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            cardElement.classList.add('highlight');
+            setTimeout(() => { cardElement.classList.remove('highlight'); }, 3000);
+        }
+
+        initTooltips();
+        albumForm.reset();
+
+        updateId = null;
+        addAlbumBtn.classList.remove('d-none');
+        updateAlbumBtn.classList.add('d-none');
+        snackbar('Album updated successfully !!!', 'success');
+    };
+}
+
+function onRemove(id) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to remove this album?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Remove'
+    }).then(result => {
+        if (result.isConfirmed) {
+            spinner.style.display = 'flex';
+            let REMOVE_URL = `${BASE_URL}/albums/${id}`;
+
+            let xhr = new XMLHttpRequest();
+            xhr.open('DELETE', REMOVE_URL);
+            xhr.send(null);
+
+            xhr.onload = function () {
+                spinner.style.display = 'none';
+                if (xhr.status >= 200 && xhr.status <= 299) {
+                    let cardElement = document.getElementById(`album-${id}`);
+                    if(cardElement) cardElement.remove();
+                    snackbar('Album removed successfully !!!', 'success');
+                }
+            };
+        }
+    });
+}
+
+fetchAlbums();
+albumForm.addEventListener('submit', onAlbumSubmit);
+updateAlbumBtn.addEventListener('click', onUpdateAlbum);
