@@ -1,5 +1,5 @@
 body {
-    background-color: rgb(255, 220, 234);
+    background-color: lightsalmon;
 }
 
 .form-card {
@@ -9,8 +9,8 @@ body {
 }
 
 #albumContainer .card {
-    background-color: cornsilk;
-    border: 1px solid #f5dce8;
+    background-color: burlywood;
+    border: 1px solid hsl(132, 56%, 91%);
     border-radius: 6px;
     transition: all 0.3s ease;
 }
